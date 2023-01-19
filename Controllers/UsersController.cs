@@ -74,7 +74,7 @@ namespace Rezervation.Controllers
                 return Forbid();
 
             var user = _userService.GetById(id);
-            var model = _mapper.Map<UserModel>(user);
+            var model = _mapper.Map<User>(user);
             return Ok(model);
         }
 

@@ -81,7 +81,7 @@ namespace Rezervation.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateModel model)
         {
-            //allows to only eidt your own profile and if you are admin you can edit all
+            //allows to only edit your own profile and if you are admin you can edit all
             var currentUserId = int.Parse(User.Identity.Name);
             if (id != currentUserId && !User.IsInRole("Admin"))
                 return Forbid();

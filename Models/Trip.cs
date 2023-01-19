@@ -8,7 +8,7 @@
         public double Duration { get; set; }
         public int TypeOfTransportId { get; set; }
         public int Organizer { get; set; }
-        public int UserId { get; set; }
+        public int User User { get; set; }
         public string Info { get; set; }
         public ICollection<Organizer> Organizers { get; set; }
     }

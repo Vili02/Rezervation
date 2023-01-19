@@ -7,7 +7,7 @@ using Rezervation.Models;
 
 namespace Rezervation.Services;
 
-public class UserSurvice
+public class UserService
 {
     public interface IUserService
     {

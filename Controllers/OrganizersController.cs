@@ -34,21 +34,21 @@ namespace Rezervation.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById([FromRoute]int id)
         {
             var organizer = _organizerService.GetById(id);
             return Ok(organizer);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] OrganizerCrudDto dto)
+        public IActionResult Update([FromRoute] int id, [FromBody] OrganizerCrudDto dto)
         {
             var organizer = _organizerService.Update(id, dto);
             return Ok(organizer);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete([FromRoute]int id)
         {
             _organizerService.Delete(id);
             return Ok("Deleted!");

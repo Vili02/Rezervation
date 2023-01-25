@@ -66,7 +66,7 @@ namespace Rezervation.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById([FromRoute] int id)
         {
 
             var user = _userService.GetById(id);
@@ -100,7 +100,7 @@ namespace Rezervation.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete([FromRoute]int id)
         {
             //allows to only delete your own profile and if you are admin you can delete all
             var currentUserId = int.Parse(User.Identity.Name);

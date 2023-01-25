@@ -5,6 +5,9 @@ using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Rezervation.Models;
 using Microsoft.AspNetCore.Identity;
+using Rezervation.Services;
+using Rezervation.DTOs;
+using Rezervation.Exceptions;
 
 namespace Rezervation.Controllers
 {
@@ -12,10 +15,8 @@ namespace Rezervation.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
-
-        public IUserService UserService => _userService;
 
         public UsersController(IUserService userService, IMapper mapper)
         {
@@ -45,7 +46,7 @@ namespace Rezervation.Controllers
             try
             {
                 // create user
-                _userService.Create(user, model.Password);
+                _userService.Create(user);
                 return Ok($"You have register successfully {model.Username}");
             }
             catch (AppException ex)
@@ -54,8 +55,6 @@ namespace Rezervation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [Authorize(Roles = "Admin")]
-        [HttpGet]
 
         [Authorize]
         [HttpGet]
@@ -64,22 +63,19 @@ namespace Rezervation.Controllers
             var users = _userService.GetAll();
             return Ok(users);
 
+        }
 
-            [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var currentUserId = int.Parse(User.Identity.Name);
-            if (id != currentUserId && !User.IsInRole("Admin"))
-                return Forbid();
 
             var user = _userService.GetById(id);
             var model = _mapper.Map<User>(user);
-            return Ok(model);
+            return Ok(user);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] UpdateModel model)
+        public IActionResult Update([FromRoute] int id, [FromBody] RegisterModel model)
         {
             //allows to only edit your own profile and if you are admin you can edit all
             var currentUserId = int.Parse(User.Identity.Name);
@@ -93,7 +89,7 @@ namespace Rezervation.Controllers
             try
             {
                 // update user 
-                _userService.Update(user, model.Password);
+                _userService.Update(user);
                 return Ok("Successfully updated");
             }
             catch (AppException ex)

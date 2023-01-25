@@ -7,11 +7,12 @@ namespace Rezervation.Data
 {
     public class ApiContext : DbContext
     {
-      
         public ApiContext(DbContextOptions<ApiContext>options)
-            :base(options)
-        { }
-         public DbSet<Trip>Trips { get; set; }
+            : base(options)
+        { 
+        }
+
+        public DbSet<Trip>Trips { get; set; }
 
         public DbSet<Role>Roles { get; set;}
 
@@ -21,6 +22,14 @@ namespace Rezervation.Data
 
         public DbSet<TypeOfTransport> TypeOfTransports { get; set;}
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

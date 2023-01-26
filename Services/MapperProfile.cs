@@ -20,8 +20,11 @@ namespace Rezervation.Services
             CreateMap<RegisterModel, User>();
             CreateMap<User, UserReturnDto>();
 
-            CreateMap<RegisterModel, Trip>();
+            CreateMap<TripCrudDto, Trip>();
             CreateMap<Trip, TripReturnDto>();
+
+            CreateMap<TypeOfTransportCrudDto, TypeOfTransport>();
+            CreateMap<TypeOfTransport, TypeOfTransportReturnDto>();
         }
     }
 }

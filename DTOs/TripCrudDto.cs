@@ -15,5 +15,8 @@ namespace Rezervation.DTOs
         [Required]
         [Range (0, 7, ErrorMessage = "Duration must be between 0 and 7 days long")]
         public decimal Duration { get; set; }
+
+        public int TypeOfTransportId { get; set; }
+        public int UserId { get; set; }
     }
 }

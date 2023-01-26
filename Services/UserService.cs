@@ -6,18 +6,21 @@ using System.Text;
 using Rezervation.Models;
 using Rezervation.DTOs;
 using Rezervation.Data;
+using AutoMapper;
 
 namespace Rezervation.Services
 {
     public class UserService : IUserService
     {
-        private readonly AppSettings _appSettings;
+        private readonly IConfiguration _configuration;
         private readonly ApiContext _context;
+        private readonly IMapper _mapper;
 
-        public UserService(IOptions<AppSettings> appSettings, ApiContext context)
+        public UserService(IConfiguration configuration, ApiContext context, IMapper mapper)
         {
-            _appSettings = appSettings.Value;
+            _configuration = configuration;
             _context = context;
+            _mapper = mapper;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
@@ -28,19 +31,20 @@ namespace Rezervation.Services
             if (user == null) return null;
 
             // authentication successful so generate jwt token
-            var token = generateJwtToken(user);
+            var token = GenerateJwtToken(user);
 
             return new AuthenticateResponse(user.Id, token);
         }
 
-        public void Create(User user)
+        public UserReturnDto Create(RegisterModel model)
         {
-            user.Role = new Role
-            {
-                Name = "User"
-            };
+            var user = _mapper.Map<User>(model);
+
+            user.Role = _context.Roles.First(r => r.Name == "Admin");
             _context.Users.Add(user);
             _context.SaveChanges();
+
+            return _mapper.Map<UserReturnDto>(user);
         }
 
         public void Delete(int id)
@@ -50,32 +54,44 @@ namespace Rezervation.Services
             _context.SaveChanges();
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserReturnDto> GetAll()
         {
-            return _context.Users.ToList();
+            return _context.Users.Select(_mapper.Map<UserReturnDto>).ToList();
         }
         
-        public User GetById(int id)
+        public UserReturnDto GetById(int id)
         {
-            return _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            return _mapper.Map<UserReturnDto>(user);
         }
 
-        public void Update(User user)
+        public UserReturnDto Update(int id, RegisterModel model)
         {
+            var user = _context.Users.SingleOrDefault(u => u.Id == id);
+
+            _mapper.Map(model, user);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
             _context.Users.Update(user);
             _context.SaveChanges();
+
+            return _mapper.Map<UserReturnDto>(user);
         }
 
         // helper methods
 
-        private string generateJwtToken(User user)
+        private string GenerateJwtToken(User user)
         {
             // generate token that is valid for 1 hour
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Secret").Value);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+                Subject = new ClaimsIdentity(new[] 
+                { 
+                    new Claim("id", user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role.Name)
+                }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

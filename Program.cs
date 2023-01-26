@@ -18,6 +18,7 @@ builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizerService, OrganizerService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -69,6 +70,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+    DatabaseInitializer.SeedRolesInDatabase(context);
+    DatabaseInitializer.SeedAdminInDatabase(context);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -77,6 +85,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

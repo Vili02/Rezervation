@@ -18,7 +18,7 @@ namespace Rezervation.Services
 
         public OrganizerReturnDto Create(OrganizerCrudDto dto)
         {
-            Organizer organizer = _mapper.Map<Organizer>(dto);
+            var organizer = _mapper.Map<Organizer>(dto);
             _context.Organizers.Add(organizer);
             _context.SaveChanges();
 
@@ -28,13 +28,17 @@ namespace Rezervation.Services
         public void Delete(int id)
         {
             var organizer = _context.Organizers.Find(id);
+            if (organizer == null)
+            {
+                return;
+            }
             _context.Organizers.Remove(organizer);
             _context.SaveChanges();
         }
 
         public OrganizerReturnDto Update(int id, OrganizerCrudDto dto)
         {
-            Organizer organizer = _context.Organizers.Find(id);
+            var organizer = _context.Organizers.Find(id);
             _mapper.Map(dto, organizer);
             _context.Organizers.Update(organizer);
             _context.SaveChanges();

@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using System.Runtime.Serialization;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Rezervation.Models;
-using Microsoft.AspNetCore.Identity;
-using Rezervation.Services;
+using Microsoft.AspNetCore.Mvc;
 using Rezervation.DTOs;
 using Rezervation.Exceptions;
+using Rezervation.Services;
 
 namespace Rezervation.Controllers
 {
@@ -16,12 +12,10 @@ namespace Rezervation.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IMapper _mapper;
 
-        public UsersController(IUserService userService, IMapper mapper)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _mapper = mapper;
         }
 
         [AllowAnonymous]
@@ -40,14 +34,11 @@ namespace Rezervation.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterModel model)
         {
-            // map model to entity
-            var user = _mapper.Map<User>(model);
-
             try
             {
                 // create user
-                _userService.Create(user);
-                return Ok($"You have register successfully {model.Username}");
+                _userService.Create(model);
+                return Ok($"You have registered successfully {model.Username}");
             }
             catch (AppException ex)
             {
@@ -56,40 +47,30 @@ namespace Rezervation.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
-            return Ok(users);
+            return Ok(_userService.GetAll());
 
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult GetById([FromRoute] int id)
         {
-
             var user = _userService.GetById(id);
-            var model = _mapper.Map<User>(user);
             return Ok(user);
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Update([FromRoute] int id, [FromBody] RegisterModel model)
         {
-            //allows to only edit your own profile and if you are admin you can edit all
-            var currentUserId = int.Parse(User.Identity.Name);
-            if (id != currentUserId && !User.IsInRole("Admin"))
-                return Forbid();
-
-            // map model to entity and set id
-            var user = _mapper.Map<User>(model);
-            user.Id = id;
-
             try
             {
                 // update user 
-                _userService.Update(user);
+                _userService.Update(id, model);
                 return Ok("Successfully updated");
             }
             catch (AppException ex)
@@ -100,15 +81,11 @@ namespace Rezervation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete([FromRoute]int id)
         {
-            //allows to only delete your own profile and if you are admin you can delete all
-            var currentUserId = int.Parse(User.Identity.Name);
-            if (id != currentUserId && !User.IsInRole("Admin"))
-                return Forbid();
-
             _userService.Delete(id);
-            return Ok("Deleted!");
+            return NoContent();
         }
     }
 }

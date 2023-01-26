@@ -29,6 +29,10 @@ namespace Rezervation.Data
                 .HasIndex(u => u.Username)
                 .IsUnique();
 
+            modelBuilder.Entity<User>()
+                .Navigation(u => u.Role)
+                .AutoInclude();
+
             base.OnModelCreating(modelBuilder);
         }
     }

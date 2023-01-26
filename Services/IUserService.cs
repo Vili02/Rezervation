@@ -7,13 +7,13 @@ namespace Rezervation.Services
     {
         AuthenticateResponse Authenticate(AuthenticateRequest model);
 
-        IEnumerable<User> GetAll();
-        
-        User GetById(int id);
+        IEnumerable<UserReturnDto> GetAll();
 
-        void Create(User user);
+        UserReturnDto GetById(int id);
 
-        void Update(User user);
+        UserReturnDto Create(RegisterModel model);
+
+        UserReturnDto Update(int id, RegisterModel model);
 
         void Delete(int id);
     }

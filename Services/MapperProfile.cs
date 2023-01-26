@@ -13,6 +13,12 @@ namespace Rezervation.Services
 
             CreateMap<OrganizerCrudDto, Organizer>();
             CreateMap<Organizer, OrganizerReturnDto>();
+
+            CreateMap<RoleCrudDto, Role>();
+            CreateMap<Role, RoleReturnDto>();
+
+            CreateMap<RegisterModel, User>();
+            CreateMap<User, UserReturnDto>();
         }
     }
 }

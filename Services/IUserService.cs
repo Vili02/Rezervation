@@ -16,5 +16,7 @@ namespace Rezervation.Services
         UserReturnDto Update(int id, RegisterModel model);
 
         void Delete(int id);
+        int GetCount();
+        User GetEntityById(int id);
     }
 }

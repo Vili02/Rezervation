@@ -98,5 +98,14 @@ namespace Rezervation.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        public int GetCount()
+        {
+            return _context.Users.Count();
+        }
+
+        public User GetEntityById(int id)
+        {
+            return _context.Users.First(u => u.Id == id);
+        }
     }
 }

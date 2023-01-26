@@ -39,9 +39,13 @@ namespace Rezervation.Services
 
         public TypeOfTransportReturnDto Update(int id, TypeOfTransportCrudDto dto)
         {
-            var typeoftransport = _context.Organizers.Find(id);
+            var typeoftransport = _context.TypeOfTransports.Find(id);
+            if (typeoftransport == null)
+            {
+                return null;
+            }
             _mapper.Map(dto, typeoftransport);
-            _context.Organizers.Update(typeoftransport);
+            _context.TypeOfTransports.Update(typeoftransport);
             _context.SaveChanges();
 
             return _mapper.Map<TypeOfTransportReturnDto>(typeoftransport);
@@ -55,6 +59,15 @@ namespace Rezervation.Services
         public TypeOfTransportReturnDto GetById(int id)
         {
             return _mapper.Map<TypeOfTransportReturnDto>(_context.TypeOfTransports.FirstOrDefault(x => x.Id == id));
+        }
+        public int GetCount()
+        {
+            return _context.TypeOfTransports.Count();
+        }
+
+        public TypeOfTransport GetEntityById(int id)
+        {
+            return _context.TypeOfTransports.First(x => x.Id == id);
         }
     }
 }

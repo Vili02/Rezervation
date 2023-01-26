@@ -55,5 +55,10 @@ namespace Rezervation.Services
         {
             return _mapper.Map<OrganizerReturnDto>(_context.Organizers.FirstOrDefault(x => x.Id == id));
         }
+
+        public int GetCount()
+        {
+            return _context.Organizers.Count();
+        }
     }
 }

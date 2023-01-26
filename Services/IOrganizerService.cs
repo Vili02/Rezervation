@@ -15,5 +15,6 @@ namespace Rezervation.Services
         OrganizerReturnDto Update(int id, OrganizerCrudDto dto);
 
         void Delete(int id);
+        int GetCount();
     }
 }

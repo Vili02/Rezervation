@@ -55,5 +55,9 @@ namespace Rezervation.Services
 
             return _mapper.Map<RoleReturnDto>(role);
         }
+        public int GetCount()
+        {
+            return _context.Roles.Count();
+        }
     }
 }

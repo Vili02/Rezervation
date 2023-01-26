@@ -13,5 +13,6 @@ namespace Rezervation.Services
         IEnumerable<RoleReturnDto> GetAll();
 
         void Delete(int id);
+        int GetCount();
     }
 }

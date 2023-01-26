@@ -13,5 +13,6 @@ namespace Rezervation.Services
         TripReturnDto Update(int id, TripCrudDto dto);
 
         void Delete(int id);
+        int GetCount();
     }
 }
